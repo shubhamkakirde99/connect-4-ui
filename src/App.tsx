@@ -1,12 +1,17 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Home from './pages/Home';
+import React from "react";
+import Home from "./pages/Home";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Game from "./pages/Game";
 
 function App() {
   return (
     <React.Fragment>
-      <Home />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/play" element={<Game />} />
+        </Routes>
+      </BrowserRouter>
     </React.Fragment>
   );
 }
