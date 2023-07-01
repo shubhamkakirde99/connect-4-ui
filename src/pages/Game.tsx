@@ -1,5 +1,9 @@
 import React from "react";
 
 export default function Game() {
-  return <div>Game</div>;
+  return (
+    <React.Fragment>
+      <div>something interesting</div>
+    </React.Fragment>
+  );
 }
