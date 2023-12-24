@@ -48,7 +48,13 @@ const Game = ({ socketRef }: GameProps) => {
   return (
     <React.Fragment>
       <h1>
-        {currentPlayer === parseInt(localStorage.getItem("player") || "")
+        {winner > 0
+          ? `${
+              winner === parseInt(localStorage.getItem("player") || "")
+                ? "You"
+                : "Opponent"
+            } Won, Game Over`
+          : currentPlayer === parseInt(localStorage.getItem("player") || "")
           ? `Your Turn, You Play ${
               parseInt(localStorage.getItem("player") || "") === 1
                 ? "Red"

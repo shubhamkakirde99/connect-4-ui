@@ -33,10 +33,10 @@ const Home = () => {
       return;
     }
 
-    let socketUrl = `ws://localhost:3001/ws?userName=${userName}&roomName=${roomName}&type=join`;
+    let socketUrl = `${process.env.REACT_APP_WEBSOCKET_SECURITY}://${process.env.REACT_APP_BACKEND_HOSTNAME}:3001/ws?userName=${userName}&roomName=${roomName}&type=join`;
 
     if (isCreate) {
-      socketUrl = `ws://localhost:3001/ws?userName=${userName}&type=create`;
+      socketUrl = `${process.env.REACT_APP_WEBSOCKET_SECURITY}://${process.env.REACT_APP_BACKEND_HOSTNAME}:3001/ws?userName=${userName}&type=create`;
     }
 
     socketRef.current = new WebSocket(socketUrl);
@@ -77,7 +77,7 @@ const Home = () => {
 
   const checkRoomExists = async (checkRoomName: string) => {
     const roomExistsResponse = await axios.get(
-      `http://localhost:3001/room-exists/${checkRoomName}`
+      `${process.env.REACT_APP_REST_SECURITY}://${process.env.REACT_APP_BACKEND_HOSTNAME}:3001/room-exists/${checkRoomName}`
     );
     return await roomExistsResponse?.data;
   };
