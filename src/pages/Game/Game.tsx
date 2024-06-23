@@ -1,5 +1,6 @@
 import React, { MutableRefObject, useEffect, useState } from "react";
-import "./ConnectFour.css"; // Make sure to create this CSS file
+import "./connectFoud.css";
+import {Typography} from "@mui/material"; // Make sure to create this CSS file
 
 type GameProps = {
   socketRef: MutableRefObject<WebSocket>;
@@ -16,7 +17,7 @@ const Game = ({ socketRef }: GameProps) => {
   const [winner, setWinner] = useState<number>(0);
 
   useEffect(() => {
-    socketRef.current.onmessage = (event: any) => {
+    socketRef.current.addEventListener("message", (event: any) => {
       const data = JSON.parse(event?.data);
       console.log(`home - [message] Data received from server: ${data}`);
       if (data?.type === "game_move") {
@@ -25,11 +26,11 @@ const Game = ({ socketRef }: GameProps) => {
         setCurrentPlayer(parseInt(data?.payload?.currentTurn));
         setWinner(parseInt(data?.payload?.winner));
       }
-    };
+    });
   }, []);
 
   const handleColumnClick = (col: number) => {
-    if (currentPlayer !== parseInt(localStorage.getItem("player") || "")) {
+    if (currentPlayer !== parseInt(sessionStorage.getItem("player") || "")) {
       return;
     } else if (winner > 0) {
       return;
@@ -39,7 +40,7 @@ const Game = ({ socketRef }: GameProps) => {
         type: "game_move",
         payload: {
           column: col,
-          player: localStorage.getItem("player"),
+          player: sessionStorage.getItem("player"),
         },
       })
     );
@@ -47,21 +48,21 @@ const Game = ({ socketRef }: GameProps) => {
 
   return (
     <React.Fragment>
-      <h1>
+      <Typography align="center">
         {winner > 0
           ? `${
-              winner === parseInt(localStorage.getItem("player") || "")
-                ? "You"
-                : "Opponent"
-            } Won, Game Over`
-          : currentPlayer === parseInt(localStorage.getItem("player") || "")
-          ? `Your Turn, You Play ${
-              parseInt(localStorage.getItem("player") || "") === 1
+            winner === parseInt(sessionStorage.getItem("player") || "")
+              ? "You"
+              : "Opponent"
+          } Won, Game Over`
+          : currentPlayer === parseInt(sessionStorage.getItem("player") || "")
+            ? `Your Turn, You Play ${
+              parseInt(sessionStorage.getItem("player") || "") === 1
                 ? "Red"
                 : "Green"
             }`
-          : "Opponent's Turn"}
-      </h1>
+            : "Opponent's Turn"}
+      </Typography>
 
       <div className="connect-four">
         {board.map((row, rowIndex) => (
