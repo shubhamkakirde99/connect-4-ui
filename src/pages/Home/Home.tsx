@@ -128,6 +128,7 @@ const Home = () => {
 
   return (
     <div id="main-screen">
+      <Typography align="center" variant="h2" sx={{color: "yellow"}}>Apologies, I ran out of free tier (750 hours). Backend shall be restored in August.</Typography>
       <div id="stars"></div>
       <div id="stars2"></div>
       <div id="stars3"></div>
