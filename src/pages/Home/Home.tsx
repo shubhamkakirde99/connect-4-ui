@@ -3,13 +3,21 @@ import React, { MutableRefObject, useRef, useState } from "react";
 import axios from "axios";
 import Game from "../Game/Game";
 import "./home.scss";
-import {Box, Button, Container, Tab, Tabs, TextField, Typography} from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 const CREATE_GAME_KEY = "create";
 const JOIN_GAME_KEY = "join";
 const BOT_GAME_KEY = "bot";
 
-const TAB_FUNCTIONALITY_MAP: {[tabIndex: number]: string} = {
+const TAB_FUNCTIONALITY_MAP: { [tabIndex: number]: string } = {
   0: CREATE_GAME_KEY,
   1: JOIN_GAME_KEY,
   2: BOT_GAME_KEY,
@@ -17,13 +25,13 @@ const TAB_FUNCTIONALITY_MAP: {[tabIndex: number]: string} = {
 
 const isCreateGame = (tabNumber: number) => {
   return TAB_FUNCTIONALITY_MAP[tabNumber] === CREATE_GAME_KEY;
-}
+};
 const isJoinGame = (tabNumber: number) => {
   return TAB_FUNCTIONALITY_MAP[tabNumber] === JOIN_GAME_KEY;
-}
+};
 const isBotGame = (tabNumber: number) => {
   return TAB_FUNCTIONALITY_MAP[tabNumber] === BOT_GAME_KEY;
-}
+};
 
 const Home = () => {
   const [userName, setUserName] = useState<string>("");
@@ -35,7 +43,8 @@ const Home = () => {
   const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0);
   const [showWaitingText, setShowWaitingText] = useState<boolean>(false);
   const [tabSwitchEnabled, setTabSwitchEnabled] = useState<boolean>(true);
-  const [opponentDisconnected, setOpponentDisconnected] = useState<boolean>(false);
+  const [opponentDisconnected, setOpponentDisconnected] =
+    useState<boolean>(false);
 
   const socketRef = useRef<WebSocket>();
 
@@ -57,14 +66,14 @@ const Home = () => {
 
     let socketUrl = `${process.env.REACT_APP_WEBSOCKET_SECURITY}://${process.env.REACT_APP_BACKEND_HOSTNAME}/ws?userName=${userName}&type=create`;
     if (!isCreateGame(selectedTabIndex)) {
-      checkRoomExists(roomName).then(response => {
+      checkRoomExists(roomName).then((response) => {
         if (response.data === false) {
           setErrorMessage(`Room Name ${roomName} Does Not Exist`);
         } else {
           socketUrl = `${process.env.REACT_APP_WEBSOCKET_SECURITY}://${process.env.REACT_APP_BACKEND_HOSTNAME}/ws?userName=${userName}&roomName=${roomName}&type=join`;
           connectWebSocket(socketUrl);
         }
-      })
+      });
     } else if (!roomName) {
       connectWebSocket(socketUrl);
     }
@@ -79,10 +88,10 @@ const Home = () => {
 
     socketRef.current.onclose = (event: any) => {
       // TODO - handle socket close
-      console.log("on close")
+      console.log("on close");
     };
     socketRef.current.onerror = (error: any) => {
-      console.log("error handler")
+      console.log("error handler");
     };
 
     socketRef.current?.addEventListener("message", (event: any) => {
@@ -94,12 +103,15 @@ const Home = () => {
         setOpponentName(data?.payload?.opponent);
       } else if (data?.type === "game_start") {
         setPreGame(false);
-        sessionStorage.setItem("player", isCreateGame(selectedTabIndex) ? "1" : "2");
+        sessionStorage.setItem(
+          "player",
+          isCreateGame(selectedTabIndex) ? "1" : "2"
+        );
       } else if (data?.type === "opponent_disconnected") {
         setOpponentDisconnected(true);
       }
     });
-  }
+  };
 
   const updateUserName = (e: any) => {
     const newUsername = e.target.value;
@@ -112,10 +124,9 @@ const Home = () => {
 
   const checkRoomExists = (checkRoomName: string) => {
     return axios.get(
-        `${process.env.REACT_APP_REST_SECURITY}://${process.env.REACT_APP_BACKEND_HOSTNAME}/room-exists/${checkRoomName}`
+      `${process.env.REACT_APP_REST_SECURITY}://${process.env.REACT_APP_BACKEND_HOSTNAME}/room-exists/${checkRoomName}`
     );
   };
-
 
   const handleRoomChange = (e: any) => {
     setRoomName(e.target.value);
@@ -124,7 +135,7 @@ const Home = () => {
   const handleTabChange = (e: React.SyntheticEvent, newValue: number) => {
     setErrorMessage("");
     setSelectedTabIndex(newValue);
-  }
+  };
 
   return (
     <div id="main-screen">
@@ -141,57 +152,78 @@ const Home = () => {
             minHeight: "75vh",
           }}
         >
-          <Box sx={{width: 3/4}}>
-            <Tabs variant="fullWidth" value={selectedTabIndex} onChange={handleTabChange}>
+          <Box sx={{ width: 3 / 4 }}>
+            <Tabs
+              variant="fullWidth"
+              value={selectedTabIndex}
+              onChange={handleTabChange}
+            >
               <Tab disabled={!tabSwitchEnabled} label="Create New Room" />
               <Tab disabled={!tabSwitchEnabled} label="Join a Room" />
               <Tab disabled={!tabSwitchEnabled} label="Play Against a Bot" />
             </Tabs>
-            <Box sx={{
-              display: "flex",
-              flexDirection: "column"
-            }}>
-              {
-                !isBotGame(selectedTabIndex) &&
-                  <TextField
-                      label="Your Name"
-                      variant="standard"
-                      onChange={updateUserName}
-                  />
-              }
-              {
-                isJoinGame(selectedTabIndex) &&
-                  <TextField
-                    label="Room Name"
-                    variant="standard"
-                    onChange={handleRoomChange}
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              {!isBotGame(selectedTabIndex) && (
+                <TextField
+                  label="Your Name"
+                  variant="standard"
+                  onChange={updateUserName}
                 />
-              }
-              {
-                isBotGame(selectedTabIndex) &&
-                  <Typography align="center" variant="h4">
-                    Coming Soon!
-                  </Typography>
-              }
-              {
-                  !showWaitingText && !isBotGame(selectedTabIndex)  &&
-                  <Button onClick={handleClickPlay}>Play</Button>
-              }
+              )}
+              {isJoinGame(selectedTabIndex) && (
+                <TextField
+                  label="Room Name"
+                  variant="standard"
+                  onChange={handleRoomChange}
+                />
+              )}
+              {isBotGame(selectedTabIndex) && (
+                <Typography
+                  sx={{ color: "yellow" }}
+                  align="center"
+                  variant="h4"
+                >
+                  Render wont allow me to host a third service for free 😭.
+                  While I find another provider, pls play multiplayer.
+                </Typography>
+              )}
+              {!showWaitingText && !isBotGame(selectedTabIndex) && (
+                <Button onClick={handleClickPlay}>Play</Button>
+              )}
             </Box>
             <Box>
-              {errorMessage && <Typography align="center" variant="h6" sx={{color: "red"}}>{errorMessage}</Typography>}
-              {infoMessage && <Typography align="center" variant="h6" sx={{color: "yellow"}}>{infoMessage}</Typography>}
+              {errorMessage && (
+                <Typography align="center" variant="h6" sx={{ color: "red" }}>
+                  {errorMessage}
+                </Typography>
+              )}
+              {infoMessage && (
+                <Typography
+                  align="center"
+                  variant="h6"
+                  sx={{ color: "yellow" }}
+                >
+                  {infoMessage}
+                </Typography>
+              )}
             </Box>
-
           </Box>
         </Container>
       ) : (
         <React.Fragment>
-          {
-            opponentDisconnected &&
-              <Typography align="center" sx={{color: "yellow"}}>Opponent has disconnected. Please wait for them to reconnect.</Typography>
-          }
-          <Typography align="center">{userName} <small>(you)</small> VS {opponentName}</Typography>
+          {opponentDisconnected && (
+            <Typography align="center" sx={{ color: "yellow" }}>
+              Opponent has disconnected. Please wait for them to reconnect.
+            </Typography>
+          )}
+          <Typography align="center">
+            {userName} <small>(you)</small> VS {opponentName}
+          </Typography>
           <Game socketRef={socketRef as MutableRefObject<WebSocket>} />
         </React.Fragment>
       )}
